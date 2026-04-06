@@ -5,7 +5,7 @@ Simulates infeed / outfeed state changes on topic: ols/tx/status
 Broker options (change BROKER below):
   "broker.hivemq.com"      – free public broker, no setup needed
   "test.mosquitto.org"     – free public broker
-  "localhost"              – only if you have Mosquitto running locally
+  "localhosts"              – only if you have Mosquitto running locally
 """
 
 import json, time
