@@ -299,5 +299,5 @@ def api_download():
 # ── Entry point ────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     init_db()
-    threading.Thread(target=_mqtt_thread, daemon=True).start()
+    #threading.Thread(target=_mqtt_thread, daemon=True).start()
     app.run(host='0.0.0.0', port=5003, debug=True, use_reloader=False)

@@ -391,10 +391,10 @@
 
                     // Set min/max for datetime picker (only if not already set)
                     const dateInput = document.getElementById('startDateTime');
-                    if (data.min_datetime && !dateInput.min) {
-                        dateInput.min = data.min_datetime;
-                        dateInput.max = data.max_datetime;
-                    }
+                    //if (data.min_datetime && !dateInput.min) {
+                    //    dateInput.min = data.min_datetime;
+                     //   dateInput.max = data.max_datetime;
+                   // }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
