@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oil Tank Monitor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-dark: #0d1117;
+            --secondary-dark: #161b22;
+            --border-color: #30363d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-orange: #d29922;
+            --card-bg: #1c2128;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1a1f2e 100%);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--secondary-dark) !important;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            color: var(--accent-blue) !important;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.5);
+        }
+
+        .card-header {
+            background: var(--secondary-dark);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--secondary-dark) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            text-shadow: 0 0 20px rgba(63, 185, 80, 0.3);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-control, .form-select {
+            background: var(--secondary-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: var(--secondary-dark);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(88, 166, 255, 0.25);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #4a92e5;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(88, 166, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            border: none;
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #3d444d;
+        }
+
+        .table {
+            color: var(--text-primary);
+        }
+
+        .table-dark {
+            --bs-table-bg: var(--secondary-dark);
+            --bs-table-border-color: var(--border-color);
+        }
+
+        .table-hover tbody tr:hover {
+            background: var(--primary-dark);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .filter-section {
+            background: var(--secondary-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .update-time {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-blue);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .icon-box i {
+            font-size: 1.5rem;
+            color: #000;
+        }
+
+        /* Main Display Card - Large Centered */
+        .main-display-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--secondary-dark) 100%);
+            padding: 2rem 1rem;
+            border-radius: 20px;
+            border: 2px solid var(--accent-green);
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(222, 37, 126, 0.2);
+            margin: 1rem 0;
+        }
+
+        .icon-box-large {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 0 40px rgba(220, 52, 125, 0.4);
+        }
+
+        .icon-box-large i {
+            font-size: 2.5rem;
+            color: #000;
+        }
+
+        .main-value {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent-green);
+            text-shadow: 0 0 40px rgba(63, 185, 80, 0.5);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .main-label {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .update-info {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Smaller stat cards */
+        .stat-card-small {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--secondary-dark) 100%);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .icon-box-small {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+        }
+
+        .icon-box-small i {
+            font-size: 1.2rem;
+            color: #000;
+        }
+
+        .stat-value-small {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .stat-label-small {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="bi bi-droplet-fill"></i> Oil Tank Monitoring System
+            </span>
+            <div class="d-flex align-items-center">
+                <span class="status-indicator me-2"></span>
+                <span class="text-secondary small">Live</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-2">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="row align-items-end justify-content-center">
+                <div class="col-md-4">
+                    <label for="startDateTime" class="form-label">
+                        <i class="bi bi-calendar3"></i> Start Date & Time
+                    </label>
+                    <input type="datetime-local" class="form-control" id="startDateTime">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary" onclick="applyFilter()">
+                        <i class="bi bi-funnel-fill"></i> Apply Filter
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearFilter()">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Display - Total Oil In -->
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="main-display-card">
+                    <div class="icon-box-large">
+                        <i class="bi bi-droplet-fill"></i>
+                    </div>
+                    <div class="main-value" id="totalOilIn">0.00</div>
+                    <div class="main-label">Total Oil In (Liters)</div>
+                    <div class="update-info">
+                        <span class="status-indicator me-2"></span>
+                        Last updated: <span id="lastUpdate">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row justify-content-center mt-2">
+            <div class="col-6 mb-2">
+                <div class="stat-card-small">
+                    <div class="icon-box-small" style="background: var(--accent-orange);">
+                        <i class="bi bi-list-ol"></i>
+                    </div>
+                    <div class="stat-value-small" id="entryCount">0</div>
+                    <div class="stat-label-small">Oil In Entries</div>
+                </div>
+            </div>
+            <div class="col-6 mb-2">
+                <div class="stat-card-small">
+                    <div class="icon-box-small" style="background: var(--accent-blue);">
+                        <i class="bi bi-calculator"></i>
+                    </div>
+                    <div class="stat-value-small" id="averagePerEntry">0.00</div>
+                    <div class="stat-label-small">Average per Entry (L)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentFilter = null;
+
+        // Load saved filter on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedFilter = localStorage.getItem('oilTankFilter');
+            if (savedFilter) {
+                currentFilter = savedFilter;
+                document.getElementById('startDateTime').value = savedFilter;
+            }
+        });
+
+        function fetchData() {
+            let url = '/api/data';
+            if (currentFilter) {
+                url += '?start_datetime=' + currentFilter;
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Update statistics
+                    document.getElementById('totalOilIn').textContent = data.total_oil_in.toFixed(2);
+                    document.getElementById('entryCount').textContent = data.count;
+                    document.getElementById('averagePerEntry').textContent = data.average_per_entry.toFixed(2);
+
+                    // Update last update time
+                    const now = new Date();
+                    document.getElementById('lastUpdate').textContent = 
+                        now.toLocaleTimeString();
+
+                    // Set min/max for datetime picker (only if not already set)
+                    const dateInput = document.getElementById('startDateTime');
+                    if (data.min_datetime && !dateInput.min) {
+                        dateInput.min = data.min_datetime;
+                        dateInput.max = data.max_datetime;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        function applyFilter() {
+            const startDateTime = document.getElementById('startDateTime').value;
+            if (startDateTime) {
+                currentFilter = startDateTime;
+                // Save filter to localStorage so it persists across refreshes
+                localStorage.setItem('oilTankFilter', startDateTime);
+                fetchData();
+            }
+        }
+
+        function clearFilter() {
+            currentFilter = null;
+            document.getElementById('startDateTime').value = '';
+            // Remove saved filter
+            localStorage.removeItem('oilTankFilter');
+            fetchData();
+        }
+
+        // Initial fetch
+        fetchData();
+
+        // Refresh every 5 seconds
+        setInterval(fetchData, 5000);
+    </script>
+</body>
+</html>
